@@ -1,6 +1,5 @@
-import sys
-
 import pandas as pd
+import sys
 
 print('arguments', sys.argv)
 

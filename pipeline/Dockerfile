@@ -20,5 +20,3 @@ RUN uv sync --locked
 COPY pipeline.py .
 
 ENTRYPOINT ["python", "pipeline.py"]
-
-mkdir ny_taxi_postgres_data

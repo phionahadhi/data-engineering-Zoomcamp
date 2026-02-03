@@ -4,6 +4,7 @@
 import pandas as pd
 from sqlalchemy import create_engine
 from tqdm.auto import tqdm
+import click
 
 
 dtype = {
@@ -31,16 +32,18 @@ parse_dates = [
 ]
 
 
-def run():
-    pg_user = 'root'
-    pg_pass = 'root'
-    pg_host = 'localhost'
-    pg_port = 5432
-    pg_db = 'ny_taxi'
-    year = 2021
-    month = 1
-    target_table = 'yellow_taxi_data'
-    chunk_size = 100000
+def run(
+    pg_user: str, 
+    pg_pass: str,
+    pg_host: str,
+    pg_port: int,
+    pg_db: str,
+    year: int,
+    month: int,
+    target_table:str,
+    chunk_size: int,
+):
+    """Ingest CSV into Postgres — parameters are passed in (CLI-enabled)."""
 
     #data source
     prefix = 'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/'
@@ -75,5 +78,18 @@ def run():
             if_exists='append'
         )
 
+@click.command()
+@click.option("--pg-user", default="root", show_default=True, help="Postgres user")
+@click.option("--pg-pass", default="root", show_default=True, help="Postgres password")
+@click.option("--pg-host", default="localhost", show_default=True, help="Postgres host")
+@click.option("--pg-port", default=5432, show_default=True, type=int, help="Postgres port")
+@click.option("--pg-db", default="ny_taxi", show_default=True, help="Postgres database")
+@click.option("--year", default=2021, show_default=True, type=int, help="Year of data")
+@click.option("--month", default=1, show_default=True, type=int, help="Month of data (1-12)")
+@click.option("--target-table", default="yellow_taxi_data", show_default=True, help="Destination table")
+@click.option("--chunk-size", default=100000, show_default=True, type=int, help="Chunk size for pandas.read_csv")
+def main(pg_user, pg_pass, pg_host, pg_port, pg_db, year, month, target_table, chunk_size):
+    run(pg_user, pg_pass, pg_host, pg_port, pg_db, year, month, target_table, chunk_size)
+
 if __name__ == '__main__':
-    run()
+    main()
